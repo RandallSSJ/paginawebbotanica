@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumina Botanics | Plantas y Macetas Premium</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Navegación Sticky Glassmorphism -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo" onclick="showSection('homeSection')">Lumina Botanics.</a>
+            <ul class="nav-links">
+                <li><a href="#" onclick="showSection('homeSection')">Inicio</a></li>
+                <li><a href="#" onclick="showSection('collectionSection')">Catálogo</a></li>
+                <li id="navOrders" style="display:none;"><a href="#" onclick="showSection('ordersSection')">Mis Pedidos</a></li>
+                <li id="navAdmin" style="display:none;"><a href="#" onclick="showSection('adminSection')" style="color:#d35400; font-weight:bold;">Panel Admin</a></li>
+            </ul>
+            <div class="auth-buttons" id="authSection">
+                <button class="btn btn-secondary btn-sm" onclick="openLoginModal()" id="btnLogin">Iniciar Sesión</button>
+                <div id="userProfile" style="display:none; align-items:center; gap: 15px;">
+                    <span id="welcomeName" style="font-weight:600; color:var(--primary);"></span>
+                    <button class="btn btn-secondary btn-sm" onclick="logout()">Salir</button>
+                </div>
+                <div class="cart-icon" onclick="openCartModal()">
+                    🛒 <span class="cart-count" id="cartCount">0</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Notificación Flotante -->
+    <div class="toast" id="toast">Notificación</div>
+
+    <!-- SECCION PRINCIPAL / HOME -->
+    <div id="homeSection" class="page-section active">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-bg"></div>
+            <div class="hero-content">
+                <h1 class="fade-in-up">Transforma tu espacio,<br>Respira <span class="text-gradient">vida.</span></h1>
+                <p class="fade-in-up delay-1">Plantas exóticas y macetas artesanales seleccionadas para almas modernas.</p>
+                <div class="hero-buttons fade-in-up delay-2">
+                    <button onclick="showSection('collectionSection')" class="btn btn-primary">Ver Catálogo</button>
+                </div>
+            </div>
+        </section>
+        
+        <section class="about" id="about">
+            <div class="container about-grid">
+                <div class="about-text">
+                    <h2>¿Por qué Lumina Botanics?</h2>
+                    <p>Creemos en el poder transformador de la naturaleza. Seleccionamos a mano cada planta, cultivándolas con amor antes de que lleguen a tu hogar.</p>
+                    <ul class="benefits">
+                        <li>🌱 Cuidados 100% orgánicos</li>
+                        <li>📦 Envío seguro a toda la ciudad</li>
+                        <li>🏺 Macetas de diseño artesanal y exclusivo</li>
+                    </ul>
+                </div>
+                <div class="about-visual">
+                    <div class="glass-orb"></div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- SECCION CATALOGO -->
+    <div id="collectionSection" class="page-section" style="padding-top:120px; min-height: 80vh;">
+        <section class="collection container">
+            <div class="section-title">
+                <h2>Catálogo de Plantas y Macetas</h2>
+                <p>Favoritos de temporada recién llegados del invernadero.</p>
+            </div>
+            
+            <div class="filters-container">
+                <div class="category-pills" id="categoryPills">
+                    <button class="pill active" onclick="setCategory(this, 'Todas')">Todas</button>
+                    <button class="pill" onclick="setCategory(this, 'Plantas')">Plantas</button>
+                    <button class="pill" onclick="setCategory(this, 'Macetas')">Macetas</button>
+                    <button class="pill" onclick="setCategory(this, 'Suculentas')">Suculentas</button>
+                </div>
+                <input type="text" id="searchInput" placeholder="🔍 Buscar producto..." oninput="handleSearch(this.value)" class="form-control" style="max-width:300px; display:inline-block;">
+            </div>
+
+            <!-- Renderizado dinámico desde JS -->
+            <div class="grid" id="productGrid"></div>
+        </section>
+    </div>
+
+    <!-- SECCION PEDIDOS -->
+    <div id="ordersSection" class="page-section" style="padding-top:120px; min-height: 80vh;">
+        <section class="container">
+            <div class="section-title">
+                <h2>Historial de Pedidos</h2>
+                <p>Revisa tus compras anteriores.</p>
+            </div>
+            <div class="card" style="background:var(--glass-bg); padding:30px;">
+                <table style="width:100%; text-align:left; border-collapse:collapse;">
+                    <thead>
+                        <tr style="border-bottom:2px solid var(--border-color);">
+                            <th style="padding:10px;">ID Pedido</th>
+                            <th>Fecha</th>
+                            <th>Artículos</th>
+                            <th>Total</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTableBody">
+                        <!-- Renderizado JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <!-- SECCION PANEL ADMINISTRADOR -->
+    <div id="adminSection" class="page-section" style="padding-top:120px; min-height: 80vh;">
+        <section class="container">
+            <div class="section-title">
+                <h2>Panel de Administrador</h2>
+                <p>Vista exclusiva. Gestiona productos y monitorea pedidos globales.</p>
+            </div>
+            
+            <h3 style="margin-bottom:15px; color:var(--primary);">Añadir Nuevo Producto al Catálogo</h3>
+            <div class="card" style="background:var(--glass-bg); padding:30px; margin-bottom:40px; display:flex; gap:15px; flex-wrap:wrap; align-items:center;">
+                <input type="text" id="addProdName" class="form-control" placeholder="Nombre de Producto" style="flex:2; min-width:200px;">
+                <input type="number" id="addProdPrice" class="form-control" placeholder="Precio ($)" style="flex:1; min-width:100px;" step="0.01">
+                <select id="addProdCat" class="form-control" style="flex:1; min-width:120px;">
+                    <option value="Plantas">Plantas</option>
+                    <option value="Macetas">Macetas</option>
+                    <option value="Suculentas">Suculentas</option>
+                </select>
+                <button class="btn btn-primary" onclick="adminAddProduct()" style="padding:12px 25px;">Guardar Objeto</button>
+            </div>
+            
+            <h3 style="margin-bottom:15px; color:var(--primary);">Histórico Global de Pedidos</h3>
+            <div class="card" style="background:var(--glass-bg); padding:30px; overflow-x:auto;">
+                <table style="width:100%; text-align:left; border-collapse:collapse;">
+                    <thead>
+                        <tr style="border-bottom:2px solid var(--border-color);">
+                            <th style="padding:10px;">ID Pedido</th>
+                            <th>Cliente</th>
+                            <th>Fecha</th>
+                            <th>Total</th>
+                            <th>Estado Actual</th>
+                            <th>Acción Admin</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminOrdersTableBody">
+                        <!-- Renderizado JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <!-- MODAL DE LOGIN / REGISTRO -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal">
+            <button class="close-btn" onclick="closeModal('loginModal')">✕</button>
+            <h2 style="margin-bottom:20px; color:var(--accent);" id="authTitle">Iniciar Sesión</h2>
+            
+            <div class="form-group">
+                <label>Usuario</label>
+                <input type="text" id="authUsername" class="form-control" placeholder="Ej. juan123 o 'admin'">
+            </div>
+            <div class="form-group">
+                <label>Contraseña</label>
+                <input type="password" id="authPassword" class="form-control" placeholder="••••••••">
+            </div>
+            
+            <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="processAuth()" id="authBtn">Entrar</button>
+            
+            <p style="margin-top:15px; font-size:0.9rem; text-align:center;">
+                <span id="authToggleText">¿No tienes cuenta?</span> 
+                <a href="#" onclick="toggleAuthMode()" style="color:var(--primary); font-weight:bold;">Cambiar</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- MODAL DEL CARRITO -->
+    <div class="modal-overlay" id="cartModal">
+        <div class="modal" style="max-width: 600px;">
+            <button class="close-btn" onclick="closeModal('cartModal')">✕</button>
+            <h2 style="margin-bottom:20px; color:var(--accent);">Tu Carrito</h2>
+            
+            <div id="cartItemsContainer" style="max-height: 300px; overflow-y:auto; margin-bottom:20px;">
+                <!-- JS Render -->
+            </div>
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; font-size:1.5rem; font-weight:bold; color:var(--primary); border-top:1px solid #ccc; padding-top:15px;">
+                <span>Total:</span>
+                <span id="cartTotalDisplay">$0.00</span>
+            </div>
+            
+            <button class="btn btn-primary" style="width:100%; margin-top:20px; padding:15px; font-size:1.1rem;" onclick="processCheckout()">Confirmar Pedido y Pagar</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-content">
+            <div class="brand">
+                <h3>Lumina Botanics.</h3>
+                <p>Cultivando vida. Diseñando espacios.</p>
+            </div>
+            <div class="contact">
+                <h4>Contacto</h4>
+                <p>hola@luminabotanics.com</p>
+                <button class="btn btn-secondary btn-sm" style="margin-top:10px;" onclick="openLoginModal()">Login Admin (admin)</button>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Lumina Botanics. Demo JS-Only.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
